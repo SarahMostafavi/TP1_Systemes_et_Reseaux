@@ -4,41 +4,59 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#define SIZE 4096
+
+#define MMAP_SIZE 4096
+
+
 // Data
 int global_init = 10;  
 // BSS
 int global_bss;        
 
-void afficher_segments() {
-     // Stack
+
+void display_segments() {
+    
+    // Stack
     int local_var = 5; 
-      // Str
+    // Str
     char *str = "Bonjour";  
     // Heap
     int *heap = malloc(sizeof(int)); 
 
-    void *mmap_zone = mmap(NULL, SIZE,
+    void *mmap_zone = mmap(NULL, MMAP_SIZE,
                            PROT_READ | PROT_WRITE,
                            MAP_PRIVATE | MAP_ANONYMOUS,
                            -1, 0);
+
+    if (mmap_zone == MAP_FAILED) {
+    	perror("mmap");
+    	exit(EXIT_FAILURE);
+    }
 
     printf("Data           : %p\n", &global_init);
     printf("BSS            : %p\n", &global_bss);
     printf("Str            : %p\n", str);
     printf("Heap           : %p\n", heap);
     printf("Stack          : %p\n", &local_var);
-    printf("Main Function  : %p\n", afficher_segments);
+    printf("Main Function  : %p\n", display_segments);
     printf("LibC Function  : %p\n", printf);
     printf("Mmap           : %p\n", mmap_zone);
 
     free(heap);
-    munmap(mmap_zone, SIZE);
+    munmap(mmap_zone, MMAP_SIZE);
+    if (munmap(mmap_zone, MMAP_SIZE) == -1) {
+ 	perror("munmap");
+    	exit(EXIT_FAILURE);
+    }
 }
 
-int main() {
-    afficher_segments();
+void  display_memory_map(){
     pid_t pid = fork();
+
+     if (pid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
 
     if (pid == 0) {
         // processus enfant
@@ -47,27 +65,20 @@ int main() {
 
         execlp("pmap", "pmap", "-X", pid_str, NULL);
 
-        perror("execlp"); 
+        perror("execlp");
         exit(1);
     } else {
         // processus parent
-        wait(NULL);
+        if (wait(NULL) == -1) {
+             perror("wait");
+             exit(EXIT_FAILURE);
+        }
     }
-
-    return 0;
 }
 
+int main() {
+    display_segments();
+    display_memory_map();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return EXIT_SUCCESS;
+}

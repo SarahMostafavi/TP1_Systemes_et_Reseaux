@@ -110,6 +110,27 @@ Node* concat(Node *l1, Node *l2) {
     temp->next = l2; 
     return l1;
 }
+// Appliquer une fonction (ici : carré) à chaque élément
+Node* map(Node *head) {
+    Node *new_head = NULL, *temp = NULL;
+
+    while (head != NULL) {
+        Node *new = malloc(sizeof(Node));
+        new->value = head->value * head->value; 
+        new->next = NULL;
+
+        if (new_head == NULL) {
+            new_head = new;
+            temp = new;
+        } else {
+            temp->next = new;
+            temp = new;
+        }
+
+        head = head->next;
+    }
+    return new_head;
+}
 int main() {
     // Création de la liste initiale
     Node *list = create_list(5);
@@ -139,6 +160,9 @@ int main() {
     Node *list2 = create_list(3);
     list = concat(list, list2);
     print_list(list);
-
+    // Test map (carré)
+    printf("\n---- TEST MAP (CARRE) ----\n");
+    Node *square = map(list);
+    print_list(square);
     return 0;
 }

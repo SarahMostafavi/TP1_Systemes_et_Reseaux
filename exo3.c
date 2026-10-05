@@ -99,6 +99,17 @@ Node* remove_last(Node *head) {
 
     return head;
 }
+// Concaténer deux listes
+Node* concat(Node *l1, Node *l2) {
+    if (l1 == NULL) return l2;
+
+    Node *temp = l1;
+    while (temp->next != NULL)
+        temp = temp->next;
+
+    temp->next = l2; 
+    return l1;
+}
 int main() {
     // Création de la liste initiale
     Node *list = create_list(5);
@@ -122,6 +133,11 @@ int main() {
     // Test suppression fin
     printf("\n---- TEST SUPPRESSION FIN ----\n");
     list = remove_last(list);
+    print_list(list);
+     // Test concaténation
+    printf("\n---- TEST CONCAT ----\n");
+    Node *list2 = create_list(3);
+    list = concat(list, list2);
     print_list(list);
 
     return 0;

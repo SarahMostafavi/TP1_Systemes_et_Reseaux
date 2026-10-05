@@ -70,6 +70,35 @@ Node* add_end(Node *head, int value) {
     temp->next = new; // ajout à la fin
     return head;
 }
+// Supprimer le premier élément
+Node* remove_first(Node *head) {
+    if (head == NULL) return NULL;
+
+    Node *temp = head;
+    head = head->next; // on avance la tête
+    free(temp);        // libération mémoire
+
+    return head;
+}
+
+// Supprimer le dernier élément
+Node* remove_last(Node *head) {
+    if (head == NULL) return NULL;
+
+    if (head->next == NULL) {
+        free(head);
+        return NULL;
+    }
+
+    Node *temp = head;
+    while (temp->next->next != NULL)
+        temp = temp->next;
+
+    free(temp->next);  // libère le dernier
+    temp->next = NULL;
+
+    return head;
+}
 int main() {
     // Création de la liste initiale
     Node *list = create_list(5);
@@ -84,6 +113,15 @@ int main() {
     // Test ajout fin
     printf("\n---- TEST AJOUT FIN ----\n");
     list = add_end(list, 6);
+    print_list(list);
+      // Test suppression début
+    printf("\n---- TEST SUPPRESSION DEBUT ----\n");
+    list = remove_first(list);
+    print_list(list);
+
+    // Test suppression fin
+    printf("\n---- TEST SUPPRESSION FIN ----\n");
+    list = remove_last(list);
     print_list(list);
 
     return 0;
